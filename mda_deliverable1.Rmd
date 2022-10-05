@@ -80,10 +80,10 @@ And that is exactly the first thing that you will do!
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: CHOICE_1\_HERE\
-2: CHOICE_2\_HERE\
-3: CHOICE_3\_HERE\
-4: CHOICE_4\_HERE
+1: apt_buildings
+2: cancer_sample
+3: flow_sample
+4: vancouver_trees
 
 <!----------------------------------------------------------------------------->
 
@@ -94,8 +94,26 @@ And that is exactly the first thing that you will do!
 <!-------------------------- Start your work below ---------------------------->
 
 ```{r}
-### EXPLORE HERE ###
-steam_games
+#apt_buildings
+nrow(apt_buildings)
+ncol(apt_buildings)
+names(apt_buildings)
+
+#cancer_sample
+nrow(cancer_sample)
+ncol(cancer_sample)
+names(cancer_sample)
+
+#flow_sample
+nrow(flow_sample)
+ncol(flow_sample)
+names(flow_sample)
+
+#vancouver_trees
+nrow(vancouver_trees)
+ncol(vancouver_trees)
+names(vancouver_trees)
+
 ```
 
 <!----------------------------------------------------------------------------->
@@ -103,12 +121,13 @@ steam_games
 1.3 Now that you've explored the 4 datasets that you were initially most interested in, let's narrow it down to 2. What lead you to choose these 2? Briefly explain your choices below, and feel free to include any code in your explanation.
 
 <!-------------------------- Start your work below ---------------------------->
-
+I am choosing the `r vancouver_trees` and `r apt_buildings` datasets, because they both seem to have very thorough data with quite a few variables, and I think it would be interesting to look at data involving attributes of the city. 
 <!----------------------------------------------------------------------------->
 
 1.4 Time for the final decision! Going back to the beginning, it's important to have an *end goal* in mind. For example, if I had chosen the `titanic` dataset for my project, I might've wanted to explore the relationship between survival and other variables. Try to think of 1 research question that you would want to answer with each dataset. Note them down below, and make your final choice based on what seems more interesting to you!
 
 <!-------------------------- Start your work below ---------------------------->
+I am choosing the `r vancouver_trees` dataset. I am interested in ecology and have taken classes in urban horticulture, and I found it to be a very interesting topic, for which I have a lot of questions. For example, I could research which neighbourhoods have the most trees and the largest trees, and whether there is a difference in species composition in different neighbourhoods. 
 
 <!----------------------------------------------------------------------------->
 
@@ -136,6 +155,44 @@ If we rewind and go back to the learning objectives, you'll see that by the end 
 2.2 For each of the 4 exercises that you complete, provide a *brief explanation* of why you chose that exercise in relation to your data (in other words, why does it make sense to do that?), and sufficient comments for a reader to understand your reasoning and code.
 
 <!-------------------------- Start your work below ---------------------------->
+2.  I'm adding a new variable that combines the genus and species names for each tree. This will allow for easier species-specific identification of trees.
+```{r}
+
+vantrees_sciname <- 
+  vancouver_trees %>%
+  mutate(scientific_name = paste(genus_name, species_name)) %>% #adding the new column by concatenating genus and species
+  select(tree_id:cultivar_name, scientific_name, common_name:latitude) #reordering so that scientific name comes before common name
+```
+
+4.  Here I am exploring the average tree diameter in each neighbourhood. Diameter is a size measure for trees and is a good proxy for the size/age of trees. This plot allows us to start to understand which neighbourhoods have larger trees.
+```{r}
+vantrees_sciname %>%
+  group_by(neighbourhood_name) %>%
+  summarise(mean_diam = mean(diameter)) %>% #summarising first so that I can easily reorder the columns by mean diameter
+  ggplot(aes(neighbourhood_name, mean_diam))+
+  geom_col() +
+  coord_flip()  #flipping the axes so we can read the neighbourhood names better
+
+```
+
+
+5.  Here I'm filtering by the genuses for Elm and Maple trees. These genuses are specifically interesting because they are the tree types most impacted by the japanese beetle, which is an invasive pest in Vancouver. This subset of the data could help us understand which neighbourhoods are most at risk for invasion of the japanese beetle.
+```{r}
+vantrees_elmmaple <-
+  vantrees_genusspecies %>%
+  filter(genus_name == "ULMUS" | genus_name == "ACER")
+```
+
+
+6.  Looking at the frequency of tree diameters for the Ulmus and Acer genuses. This helps us start to understand the distribution of ages/sizes for these types of trees.
+
+```{r}
+vantrees_elmmaple %>%
+  ggplot(aes(genus_name, diameter)) +
+  geom_boxplot() +
+  scale_y_continuous(trans='log10') #log transforming the data so we can see the plots better
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -144,6 +201,7 @@ If we rewind and go back to the learning objectives, you'll see that by the end 
 So far, you have chosen a dataset and gotten familiar with it through exploring the data. Now it's time to figure out 4 research questions that you would like to answer with your data! Write the 4 questions and any additional comments at the end of this deliverable. These questions are not necessarily set in stone - TAs will review them and give you feedback; therefore, you may choose to pursue them as they are for the rest of the project, or make modifications!
 
 <!--- *****START HERE***** --->
+
 
 # Task 4: Process and summarize your data (13 points)
 
