@@ -158,39 +158,39 @@ If we rewind and go back to the learning objectives, you'll see that by the end 
 2.  I'm adding a new variable that combines the genus and species names for each tree. This will allow for easier species-specific identification of trees.
 ```{r}
 
-vantrees_sciname <- 
+(vantrees_sciname <- 
   vancouver_trees %>%
   mutate(scientific_name = paste(genus_name, species_name)) %>% #adding the new column by concatenating genus and species
-  select(tree_id:cultivar_name, scientific_name, common_name:latitude) #reordering so that scientific name comes before common name
+  select(tree_id:cultivar_name, scientific_name, common_name:latitude)) #reordering so that scientific name comes before common name
 ```
 
 4.  Here I am exploring the average tree diameter in each neighbourhood. Diameter is a size measure for trees and is a good proxy for the size/age of trees. This plot allows us to start to understand which neighbourhoods have larger trees.
 ```{r}
-vantrees_sciname %>%
+(vantrees_sciname %>%
   group_by(neighbourhood_name) %>%
   summarise(mean_diam = mean(diameter)) %>% #summarising first so that I can easily reorder the columns by mean diameter
-  ggplot(aes(neighbourhood_name, mean_diam))+
+  ggplot(aes(x=reorder(neighbourhood_name, +mean_diam), mean_diam))+
   geom_col() +
-  coord_flip()  #flipping the axes so we can read the neighbourhood names better
+  coord_flip())  #flipping the axes so we can read the neighbourhood names better
 
 ```
 
 
 5.  Here I'm filtering by the genuses for Elm and Maple trees. These genuses are specifically interesting because they are the tree types most impacted by the japanese beetle, which is an invasive pest in Vancouver. This subset of the data could help us understand which neighbourhoods are most at risk for invasion of the japanese beetle.
 ```{r}
-vantrees_elmmaple <-
+(vantrees_elmmaple <-
   vantrees_genusspecies %>%
-  filter(genus_name == "ULMUS" | genus_name == "ACER")
+  filter(genus_name == "ULMUS" | genus_name == "ACER"))
 ```
 
 
 6.  Looking at the frequency of tree diameters for the Ulmus and Acer genuses. This helps us start to understand the distribution of ages/sizes for these types of trees.
 
 ```{r}
-vantrees_elmmaple %>%
+(vantrees_elmmaple %>%
   ggplot(aes(genus_name, diameter)) +
   geom_boxplot() +
-  scale_y_continuous(trans='log10') #log transforming the data so we can see the plots better
+  scale_y_continuous(trans='log10')) #log transforming the data so we can see the plots better
 ```
 
 
@@ -201,7 +201,10 @@ vantrees_elmmaple %>%
 So far, you have chosen a dataset and gotten familiar with it through exploring the data. Now it's time to figure out 4 research questions that you would like to answer with your data! Write the 4 questions and any additional comments at the end of this deliverable. These questions are not necessarily set in stone - TAs will review them and give you feedback; therefore, you may choose to pursue them as they are for the rest of the project, or make modifications!
 
 <!--- *****START HERE***** --->
-
+1. Which neighbourhoods have the highest tree species diversity?
+2. Which neighbourhoods have the most Elm and Maple trees, in total count and in proportion to the neighbourhood's size?
+3. How has the amount of trees planted in Vancouver changed through time?
+4. How does the planting environment (Root barrier presence, planting area type) impact tree size?
 
 # Task 4: Process and summarize your data (13 points)
 
@@ -230,6 +233,71 @@ Ensure that the output of each operation is printed!
 Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
+1. Which neighbourhoods have the highest tree species diversity?
+    - Based on two categorical variables, calculate two summary statistics of your choosing.
+      *I will be calculating the count of species in each neighbourhood*
+```{r}
+(speciesdiv_neighbourhood <- 
+  vantrees_sciname %>%
+  group_by(neighbourhood_name) %>%
+  summarise(species_count = n_distinct(scientific_name)))
+```
+
+    - Create 3 histograms out of summarized variables, with each histogram having different sized bins. Pick the "best" one and explain why it is the best.
+
+```{r}
+hist1_speciesdiv <-
+  speciesdiv_neighbourhood %>%
+  ggplot(aes(x=species_count)) + 
+  geom_histogram(binwidth = 1) 
+print(hist1_speciesdiv)
+
+hist5_speciesdiv <-
+  speciesdiv_neighbourhood %>%
+  ggplot(aes(x=species_count)) + 
+  geom_histogram(binwidth = 5) 
+print(hist5_speciesdiv)
+
+hist15_speciesdiv <-
+  speciesdiv_neighbourhood %>%
+  ggplot(aes(x=species_count)) + 
+  geom_histogram(binwidth = 15) 
+print(hist15_speciesdiv)
+```
+   *I made histograms for species diversity to see how it is distributed in neighbourhoods across the city. The one with the bin width of 15 is the best, because the values for species count are pretty spread out, and there is a relatively small amount of neighbourhoods, so the histograms with smaller bin widths look very sparse and make it hard to see any trends.
+
+
+
+2. Which neighbourhoods have the most Elm and Maple trees, in total count and in proportion to the neighbourhood's size?
+
+
+
+3. How has the amount of trees planted in Vancouver changed through time?
+
+
+
+4. How does the planting environment (Root barrier presence, planting area type) impact tree size?
+    - Compute the number of observations for at least one of your categorical variables.
+    *I'll compute the number of observations for root barrier presence to get an idea of how common it is.*
+```{r}
+(vancouver_trees %>%
+  group_by(root_barrier) %>%
+  summarize(count=n()))
+```
+    - Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are “pretty” or easier to read.
+    *histogram of tree size by groups of Y/N root barrier*
+```{r}
+(height_rootbarrier <-
+vancouver_trees %>%
+  group_by(root_barrier) %>%
+  ggplot(aes(x=height_range_id, fill=root_barrier, colour = root_barrier)) +
+   geom_histogram(position = "dodge", binwidth = 1)+
+  scale_y_log10("Tree count per height range") +
+  xlab("Tree height range"))
+```
+    
+
+
 
 <!----------------------------------------------------------------------------->
 
@@ -240,6 +308,14 @@ Based on the operations that you've completed, how much closer are you to answer
 <!-------------------------- Start your work below ---------------------------->
 
 <!----------------------------------------------------------------------------->
+
+
+plot_speciesdiv_neighbourhood <-
+  speciesdiv_neighbourhood %>%
+  ggplot(aes(x=reorder(neighbourhood_name, +species_count), species_count)) + 
+  geom_col() +
+  coord_flip()
+print(plot_speciesdiv_neighbourhood)
 
 ### Attribution
 
