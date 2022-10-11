@@ -233,9 +233,9 @@ Ensure that the output of each operation is printed!
 Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
-1. Which neighbourhoods have the highest tree species diversity?
+**1. Which neighbourhoods have the highest tree species diversity?**
     - Compute the number of observations for at least one of your categorical variables.
-      *I will be calculating the count of species in each neighbourhood*
+      *I will be calculating how many different species are present in each neighbourhood. Species count is a good measure of the biodiversity of an area. It is helpful to have this summary, but it is difficult to understand what the numbers mean without a graphical visualization of the summary.*
 ```{r}
 (speciesdiv_neighbourhood <- 
   vantrees_sciname %>%
@@ -264,12 +264,13 @@ hist15_speciesdiv <-
   geom_histogram(binwidth = 15) 
 print(hist15_speciesdiv)
 ```
-   *I made histograms for species diversity to see how it is distributed in neighbourhoods across the city. The one with the bin width of 15 is the best, because the values for species count are pretty spread out, and there is a relatively small amount of neighbourhoods, so the histograms with smaller bin widths look very sparse and make it hard to see any trends.
+   *I made histograms for species diversity to see how it is distributed in neighbourhoods across the city. The one with the bin width of 15 is the best, because the values for species count are pretty spread out, and there is a relatively small amount of neighbourhoods, so the histograms with smaller bin widths look very sparse and make it hard to see any trends. This is helpful to understand how species diversity varies across neighbourhoods in Vancouver*
 
 
 
-2. Which neighbourhoods have the most Elm and Maple trees, in total count and in proportion to the neighbourhood's size?
+**2. Which neighbourhoods have the most Elm and Maple trees, in total count and in proportion to the neighbourhood's size?**
     - Compute the number of observations for at least one of your categorical variables.
+    *Here I am calculating the number of Elm and Maple trees in each neighbourhood. This may be useful down the road, but there are too many neighbourhoods for this summary table to be very helpful to just look at. I will need to graph this or sumarize it further to get visually clear results.*
 ```{r}
 (elmmaple_neighbourhood <- 
   vantrees_elmmaple %>%
@@ -278,7 +279,8 @@ print(hist15_speciesdiv)
 ```
   
     -Make a graph where it makes sense to customize the alpha transparency.
-    *Plotting each observation of trees by latitude and longitude to get an idea of distribution within the city, and to see whether or not the different genuses are grouped together.*
+*Here I am plotting each observation of elm and maple trees by latitude and longitude, and colouring by genus to get an idea of distribution within the city, and to see whether or not the different genuses are grouped together. This is an interesting graph, it shows that Maple trees are spread out across most of the city, and Elm trees are more grouped together. It would be especially useful to be able to overlay a map including neighbourhood names and other attributes of the city such as parks.*
+    
 ```{r}
 vantrees_elmmaple %>%
   ggplot(aes(x=latitude, y=longitude, fill=genus_name, colour=genus_name)) +
@@ -287,9 +289,9 @@ vantrees_elmmaple %>%
     
 
 
-3. How has the amount of trees planted in Vancouver changed through time?
+**3. How has the amount of trees planted in Vancouver changed through time?**
     - Create a categorical variable with 3 or more groups from an existing numerical variable. You can use this new variable in the other tasks!
-    *I'll make tree planting date into decadal categories*
+    *I'll make tree planting date into decadal categories. This is somewhat useful, it could be helpful down the line to be able to filter by decade.*
 ```{r}
 vantrees_decade <-
 vantrees_sciname %>%
@@ -306,7 +308,7 @@ vantrees_sciname %>%
 
 ```
     - Create 3 histograms out of summarized variables, with each histogram having different sized bins. Pick the “best” one and explain why it is the best.
-    *I'll create histograms for when trees were planted to see change through time*
+    *I'll create histograms for the dates that trees were planted to see change through time in planting rate.*
 ```{r}
 hist10_dateplanted <-
   vantrees_sciname %>%
@@ -326,19 +328,19 @@ hist300_dateplanted <-
   geom_histogram(binwidth = 300) 
 print(hist300_dateplanted) #need to decide which is "best"
 ```
-    
+    *I think that the histogram with the widest bin width (300) is the most useful because it shows overall trends better than the others. We can see in this graph that there are periods of time when there is a lot of tree planting happening in the city, but it fluctuates a lot and is was relatively low in the more recent years. The histogram with bin width = 100 is also interesting because it shows the variation year to year with a bit more precision.*
 
 
-4. How does the planting environment (Root barrier presence, planting area type) impact tree size?
+**4. How does the planting environment (Root barrier presence, planting area type) impact tree size?**
     - Compute the number of observations for at least one of your categorical variables.
-    *I'll compute the number of observations for root barrier presence to get an idea of how common it is.*
+    *I'll compute the number of observations for root barrier presence to get an idea of how common it is. This is helpful context for me to understand that there are far more trees without root barriers than with root barriers in the city.*
 ```{r}
 (vancouver_trees %>%
   group_by(root_barrier) %>%
   summarize(count=n()))
 ```
     - Create a graph of your choosing, make one of the axes logarithmic, and format the axes labels so that they are “pretty” or easier to read.
-    *histogram of tree size by groups of Y/N root barrier*
+    *This is a histogram of tree size by groups of Y/N root barrier, I made the y axis logarithmic to be able to see the distribution for the curve of trees with a root barrier better. It is somewhat helpful, because we can see that there are more trees in the higher height ranges for trees without root barriers, but to fully understand the effect of root barriers I will need to investigate this further and scale by the total count of trees in each treatment.*
 ```{r}
 (height_rootbarrier <-
 vancouver_trees %>%
@@ -359,16 +361,11 @@ vancouver_trees %>%
 Based on the operations that you've completed, how much closer are you to answering your research questions? Think about what aspects of your research questions remain unclear. Can your research questions be refined, now that you've investigated your data a bit more? Which research questions are yielding interesting results?
 
 <!-------------------------- Start your work below ---------------------------->
+*I think that I am close to answering research questions 1, 2, and 3, and I still have significant work to do on question 4. I think that the operations that I did in this assigmnent were helpful for clarifying how I should be looking at the data to more thoroughly answer my research questions (In task 4.1.1 I identified some graphs that I should make, and analyses that I should do based on the results that I have so far). All of the questions are yielding interesting results, but I am especially interested to learn more about question 4 as I dig into the data more. 
+
 
 <!----------------------------------------------------------------------------->
 
-
-plot_speciesdiv_neighbourhood <-
-  speciesdiv_neighbourhood %>%
-  ggplot(aes(x=reorder(neighbourhood_name, +species_count), species_count)) + 
-  geom_col() +
-  coord_flip()
-print(plot_speciesdiv_neighbourhood)
 
 ### Attribution
 
