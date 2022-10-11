@@ -1,6 +1,6 @@
 ---
 title: "Mini Data-Analysis Deliverable 1"
-output: html_document
+output: github_document
 ---
 
 # Welcome to your (maybe) first-ever data analysis project!
@@ -115,19 +115,18 @@ ncol(vancouver_trees)
 names(vancouver_trees)
 
 ```
-
 <!----------------------------------------------------------------------------->
 
 1.3 Now that you've explored the 4 datasets that you were initially most interested in, let's narrow it down to 2. What lead you to choose these 2? Briefly explain your choices below, and feel free to include any code in your explanation.
 
 <!-------------------------- Start your work below ---------------------------->
-I am choosing the `r vancouver_trees` and `r apt_buildings` datasets, because they both seem to have very thorough data with quite a few variables, and I think it would be interesting to look at data involving attributes of the city. 
+*I am choosing the `r vancouver_trees` and `r apt_buildings` datasets, because they both seem to have very thorough data with quite a few variables, and I think it would be interesting to look at data involving attributes of the city.*
 <!----------------------------------------------------------------------------->
 
 1.4 Time for the final decision! Going back to the beginning, it's important to have an *end goal* in mind. For example, if I had chosen the `titanic` dataset for my project, I might've wanted to explore the relationship between survival and other variables. Try to think of 1 research question that you would want to answer with each dataset. Note them down below, and make your final choice based on what seems more interesting to you!
 
 <!-------------------------- Start your work below ---------------------------->
-I am choosing the `r vancouver_trees` dataset. I am interested in ecology and have taken classes in urban horticulture, and I found it to be a very interesting topic, for which I have a lot of questions. For example, I could research which neighbourhoods have the most trees and the largest trees, and whether there is a difference in species composition in different neighbourhoods. 
+*I am choosing the `r vancouver_trees` dataset. I am interested in ecology and have taken classes in urban horticulture, and I found it to be a very interesting topic, for which I have a lot of questions. For example, I could research which neighbourhoods have the most trees and the largest trees, and whether there is a difference in species composition in different neighbourhoods.*
 
 <!----------------------------------------------------------------------------->
 
