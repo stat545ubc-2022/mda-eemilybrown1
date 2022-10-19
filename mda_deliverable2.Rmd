@@ -42,6 +42,7 @@ Begin by loading your data and the tidyverse package below:
 ```{r, message = FALSE}
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
+library(dplyr)
 ```
 
 # Task 1: Tidy your data (15 points)
@@ -61,7 +62,10 @@ A reminder of the definition of *tidy* data:
 Based on the definition above, can you identify if your data is tidy or untidy? Go through all your columns, or if you have \>8 variables, just pick 8, and explain whether the data is untidy or tidy.
 
 <!--------------------------- Start your work below --------------------------->
-
+```{r}
+glimpse(vancouver_trees)
+```
+Based on the definition above, this data is not tidy. Specifically, the plant_area column contains two variables. The definition of this column is: "B = behind sidewalk, G = in tree grate, N = no sidewalk, C = cutout, a number  indicates boulevard width in feet". It should be split into two columns, one with the plant area type (B = behind sidewalk, G = in tree grate, N = no sidewalk, C = cutout, and adding in O = on boulevard), and one with boulevard width.
 <!----------------------------------------------------------------------------->
 
 ### 2.2 (5 points)
@@ -73,6 +77,29 @@ If your data is untidy, then tidy it! Then, untidy it back to it's original stat
 Be sure to explain your reasoning for this task. Show us the "before" and "after".
 
 <!--------------------------- Start your work below --------------------------->
+```{r}
+#BEFORE 
+(vancouver_trees)
+
+#Adding column for boulevard width
+vancouver_trees_tidy <- vancouver_trees %>%
+  mutate(boulevard_width = if_else((plant_area %in%   
+                                      c(1:(max(as.numeric(vancouver_trees$plant_area), na.rm=TRUE)))), 
+                                   plant_area, 
+                                   ""))
+
+#Changing numbers in plant_area to "O"
+vancouver_trees_tidy <- vancouver_trees_tidy %>%
+  mutate(plant_area = if_else((plant_area %in%   
+                                      c(1:(max(as.numeric(vancouver_trees$plant_area), na.rm=TRUE)))), 
+                              "O", 
+                              plant_area))
+
+#Reordering so boulevard_width is after plant_area
+(vancouver_trees_tidy <- vancouver_trees_tidy %>%
+  select(tree_id:plant_area, boulevard_width, everything()))
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -82,21 +109,52 @@ Now, you should be more familiar with your data, and also have made progress in 
 
 <!-------------------------- Start your work below ---------------------------->
 
-1.  *FILL_THIS_IN*
-2.  *FILL_THIS_IN*
+1.  *Which neighbourhoods have the most Elm and Maple trees, in total count and in proportion to the neighbourhood’s size?*
+2.  *How does the planting environment (Root barrier presence, planting area type) impact tree size?*
 
 <!----------------------------------------------------------------------------->
 
 Explain your decision for choosing the above two research questions.
 
 <!--------------------------- Start your work below --------------------------->
-
+I chose these research questions because they are the ones that I found the most interesting results for in milestone 1, and I laid out future steps to further analyze these questions in milestone 1. I think the other two questions that I had asked are too simplistic to continue analyzing. 
 <!----------------------------------------------------------------------------->
 
 Now, try to choose a version of your data that you think will be appropriate to answer these 2 questions. Use between 4 and 8 functions that we've covered so far (i.e. by filtering, cleaning, tidy'ing, dropping irrelevant columns, etc.).
 
 <!--------------------------- Start your work below --------------------------->
+```{r}
+#Adding a scientific name column by concatenating genus and species name
+vancouver_trees_tidy <-
+vancouver_trees_tidy %>%
+  mutate(scientific_name = paste(genus_name, species_name)) %>%
+  select(tree_id:cultivar_name, scientific_name, everything()) #reordering so that it comes after the other naming variables
 
+#Dropping columns that won't be used to make the dataset easier to work with
+vancouver_trees_tidy <- 
+  vancouver_trees_tidy %>%
+  subset(select = 
+           -c(civic_number, 
+              std_street,
+              assigned,
+              on_street_block,
+              on_street,
+              street_side_name))
+
+#Reordering columns to make more logical sense
+vancouver_trees_tidy <-
+  vancouver_trees_tidy %>%
+  select(tree_id, date_planted, genus_name:common_name, #identifying characteristics of the tree
+         neighbourhood_name, latitude, longitude, #location information
+         root_barrier:boulevard_width, curb,  #physical location characteristics
+         height_range_id:diameter) #tree size traits
+
+#Making an elm and maple only subset of the tidied data
+elm_maple_tidy <-
+  vancouver_trees_tidy %>%
+  filter(genus_name %in% c("ACER", "ULMUS"))
+
+```
 <!----------------------------------------------------------------------------->
 
 # Task 2: Special Data Types (10)
