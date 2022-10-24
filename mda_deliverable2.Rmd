@@ -95,6 +95,20 @@ vancouver_trees_tidy <- vancouver_trees_tidy %>%
                               "O", 
                               plant_area))
 
+#Checking what the entry types there are for plant_area (should only be B = behind sidewalk, G = in tree grate, N = no sidewalk, C = cutout, and O = on boulevard)
+unique(vancouver_trees_tidy$plant_area)
+#not what we want... need to change lowercase b g n and c to uppercase and remove all other variables
+
+vancouver_trees_tidy <-
+  vancouver_trees_tidy %>%
+  mutate(plant_area = toupper(plant_area)) %>% #making everything uppercase
+  mutate(plant_area = factor(plant_area, levels = c("B", "G", "N", "C", "O")))
+
+vancouver_trees_tidy <- vancouver_trees_tidy[!is.na(vancouver_trees_tidy$plant_area), ]
+#making it a factor with only the 5 levels we are interested in
+
+unique(vancouver_trees_tidy$plant_area) #That looks better!
+
 #Reordering so boulevard_width is after plant_area
 (vancouver_trees_tidy <- vancouver_trees_tidy %>%
   select(tree_id:plant_area, boulevard_width, everything()))
@@ -164,6 +178,14 @@ For this exercise, you'll be choosing two of the three tasks below -- both tasks
 But first, tasks 1 and 2 below ask you to modify a plot you made in a previous milestone. The plot you choose should involve plotting across at least three groups (whether by facetting, or using an aesthetic like colour). Place this plot below (you're allowed to modify the plot if you'd like). If you don't have such a plot, you'll need to make one. Place the code for your plot below.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+(height_plantarea <-
+vancouver_trees_tidy %>%
+  ggplot(aes(x=plant_area, y=height_range_id, group=plant_area)) +
+   geom_boxplot(aes(fill=plant_area))+
+   ylab("Height range") +
+   xlab("Planting area"))
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -186,13 +208,39 @@ Now, choose two of the following tasks.
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 1
+```{r}
+(height_plantarea_reordered <-
+vancouver_trees_tidy %>%
+  mutate(plant_area = fct_reorder(plant_area, height_range_id)) %>%
+  ggplot(aes(x=plant_area, 
+             y=height_range_id,
+             group=plant_area)) +
+  geom_boxplot(aes(fill=plant_area)) +
+  ylab("Height range") +
+  xlab("Planting area"))
+
+```
+I chose to reorder the planting area groups by height range. I thought that this could be useful because it would give a sense of which planting areas can support larger trees. The reordering makes it easier to see which groups have higher averages than the others, which is especially useful here because the averages appear to be pretty close together.
 
 <!----------------------------------------------------------------------------->
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 2
+```{r}
+vancouver_trees_tidy$elm_maple_other <- fct_other(vancouver_trees_tidy$genus_name,
+                                  keep = c("ULMUS", "ACER"))
+  
+(height_plantarea <-
+vancouver_trees_tidy %>%
+  ggplot(aes(x=elm_maple_other, y=height_range_id, group=elm_maple_other)) +
+   geom_boxplot(aes(fill=elm_maple_other))+
+   ylab("Height range") +
+   xlab("Genus"))
+
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -204,9 +252,9 @@ Pick a research question, and pick a variable of interest (we'll call it "Y") th
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Research Question**: FILL_THIS_IN
+**Research Question**: How does the planting environment (Root barrier presence, planting area type) impact tree size?
 
-**Variable of interest**: FILL_THIS_IN
+**Variable of interest**: boulevard_width
 
 <!----------------------------------------------------------------------------->
 
@@ -221,6 +269,13 @@ Fit a model or run a hypothesis test that provides insight on this variable with
     -   You could use `lm()` to test for significance of regression.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+vancouver_trees_tidy$boulevard_width <-
+  as.numeric(vancouver_trees_tidy$boulevard_width)
+
+lm_height_boulwidth <-
+  lm(height_range_id ~ boulevard_width, vancouver_trees_tidy)
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -233,6 +288,10 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 -   Obtain your results using the `broom` package if possible. If your model is not compatible with the broom function you're needing, then you can obtain your results by some other means, but first indicate which broom function is not compatible.
 
 <!-------------------------- Start your work below ---------------------------->
+I'm choosing to produce the tidy results of the linear regression model. I am specifically seeking the p-value for the regression.
+```{r}
+tidy(lm_height_boulwidth)
+```
 
 <!----------------------------------------------------------------------------->
 
