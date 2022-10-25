@@ -241,7 +241,7 @@ vancouver_trees_tidy %>%
 
 ```
 
-
+Here I grouped all genuses other than Acer and Ulmus into an "Other" category, because Acer nad Ulmus are most likely to be affected by the Japanese Beetle (an invasive species in Vancouver) and I wanted to see if there are any notable differences in tree height between these tree types and other genuses. 
 <!----------------------------------------------------------------------------->
 
 # Task 3: Modelling
@@ -307,6 +307,15 @@ Take a summary table that you made from Milestone 1 (Task 4.2), and write it as 
 -   **Reproducibility criteria**: You should be able to delete the csv file, and remake it simply by knitting this Rmd file.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+rootbarrier_counts <-
+    vancouver_trees %>%
+      group_by(root_barrier) %>%
+      summarize(count=n())
+
+write_csv(rootbarrier_counts, here::here("output", "rootbarrier_counts.csv")) 
+```
+
 
 <!----------------------------------------------------------------------------->
 
@@ -317,6 +326,10 @@ Write your model object from Task 3 to an R binary file (an RDS), and load it ag
 -   The same robustness and reproducibility criteria as in 3.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+saveRDS(lm_height_boulwidth, file=here("output", "lm_height_boulwidth.RDS"))
+lm_height_boulwidth <- readRDS(here("output", "lm_height_boulwidth.RDS"))
+```
 
 <!----------------------------------------------------------------------------->
 
